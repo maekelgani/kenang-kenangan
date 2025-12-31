@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Star, Heart, ArrowUp, Hash } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Star, Heart, ArrowUp, Hash, Utensils, Sparkles } from "lucide-react"; // Tambah Icon Utensils & Sparkles
 import DustParticles from "../ui/DustParticles";
 
-// Mock Data (Nanti ganti dengan import gambar asli)
+// --- MOCK DATA (Silakan ganti path gambarnya nanti) ---
 
 const FAVORITES = [
   "/images/2025/2025-11.jpg",
@@ -12,11 +12,25 @@ const FAVORITES = [
   "/images/2025/2025-5-Landscape.jpg",
 ];
 
+const FOOD_DATA = [
+  "/images/foodies/food-1.jpg", // Ganti dengan foto makanan
+  "/images/foodies/food-2.jpg",
+  "/images/foodies/food-3.jpg",
+  "/images/foodies/food-4.jpg",
+];
+
+const RANDOM_DATA = [
+  "/images/2023/2023-1.jpg", // Ganti dengan foto random/meme/lucu
+  "/images/2023/2023-2.jpg",
+  "/images/2023/2023-3.jpg",
+  "/images/2023/2023-4.jpg",
+];
+
 const GALLERY_DATA = {
   2023: [
     "/images/2023/2023-1.jpg",
     "/images/2023/2023-2.jpg",
-    "/images/2023/2023-3.jpg", // Tambahkan gambar lain
+    "/images/2023/2023-3.jpg",
     "/images/2023/2023-4.jpg",
     "/images/2023/2023-5.jpg",
     "/images/2023/2023-6.jpg",
@@ -64,23 +78,26 @@ const GALLERY_DATA = {
     "/images/2025/2025-21.jpg",
   ]
 };
-// --- KOMPONEN NAVIGASI CEPAT (TABLE OF CONTENT) ---
+
+// --- KOMPONEN NAVIGASI CEPAT (UPDATED) ---
 const QuickNav = ({ activeSection, onJump }) => {
   const sections = [
     { id: 'fav', label: 'Favorites', icon: <Heart size={14} /> },
     { id: '2023', label: '2023', icon: <Hash size={14} /> },
     { id: '2024', label: '2024', icon: <Hash size={14} /> },
     { id: '2025', label: '2025', icon: <Hash size={14} /> },
+    { id: 'food', label: 'Food', icon: <Utensils size={14} /> }, // NEW
+    { id: 'random', label: 'Random', icon: <Sparkles size={14} /> }, // NEW
   ];
 
   return (
     <div className="fixed top-20 left-0 w-full z-40 flex justify-center pointer-events-none">
-      <div className="bg-white/80 backdrop-blur-md border border-gray-200 shadow-lg rounded-full p-1.5 flex gap-1 pointer-events-auto overflow-x-auto max-w-[90%] md:max-w-none no-scrollbar">
+      <div className="bg-white/80 backdrop-blur-md border border-gray-200 shadow-lg rounded-full p-1.5 flex gap-1 pointer-events-auto overflow-x-auto max-w-[95%] md:max-w-none no-scrollbar">
         {sections.map((sec) => (
           <button
             key={sec.id}
             onClick={() => onJump(sec.id)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-3 md:px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
               activeSection === sec.id 
                 ? 'bg-gray-900 text-white shadow-md scale-105' 
                 : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
@@ -94,7 +111,7 @@ const QuickNav = ({ activeSection, onJump }) => {
   );
 };
 
-// --- KOMPONEN PHOTO CARD (DENGAN EFEK) ---
+// --- KOMPONEN PHOTO CARD ---
 const PhotoCard = ({ src, index }) => {
   return (
     <motion.div
@@ -103,9 +120,8 @@ const PhotoCard = ({ src, index }) => {
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       whileHover={{ scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
-      className="relative group overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 bg-gray-100"
+      className="relative group overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 bg-gray-100 cursor-pointer"
     >
-      {/* Efek Shimmer saat hover */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 z-10 pointer-events-none" />
       
       <img 
@@ -115,7 +131,6 @@ const PhotoCard = ({ src, index }) => {
         loading="lazy"
       />
       
-      {/* Overlay Date/Info (Optional) */}
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
     </motion.div>
   );
@@ -124,13 +139,11 @@ const PhotoCard = ({ src, index }) => {
 // --- MAIN COMPONENT ---
 const GalleryView = ({ onBack }) => {
   const [activeSection, setActiveSection] = useState('fav');
-  const scrollRef = useRef(null);
 
   // Scroll to section handler
   const jumpToSection = (id) => {
     const element = document.getElementById(`section-${id}`);
     if (element) {
-      // Offset untuk header dan nav bar
       const offset = 140; 
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
@@ -143,15 +156,18 @@ const GalleryView = ({ onBack }) => {
     }
   };
 
-  // Detect active section on scroll (Simple Intersection Logic)
+  // Detect active section on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['fav', '2023', '2024', '2025'];
+      // Tambahkan 'food' dan 'random' ke list deteksi
+      const sections = ['fav', '2023', '2024', '2025', 'food', 'random'];
+      
       for (const sec of sections) {
         const el = document.getElementById(`section-${sec}`);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top >= 0 && rect.top <= 300) {
+          // Logika sederhana: Jika bagian atas elemen berada di dekat viewport atas
+          if (rect.top >= 0 && rect.top <= 400) {
             setActiveSection(sec);
             break;
           }
@@ -168,7 +184,6 @@ const GalleryView = ({ onBack }) => {
       {/* --- BACKGROUND EFFECTS --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <DustParticles />
-        {/* Soft Blobs Background */}
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-pink-100/50 rounded-full blur-[100px] mix-blend-multiply opacity-70 animate-blob" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[100px] mix-blend-multiply opacity-70 animate-blob animation-delay-2000" />
         <div className="absolute bottom-0 left-20 w-[500px] h-[500px] bg-yellow-100/50 rounded-full blur-[100px] mix-blend-multiply opacity-70 animate-blob animation-delay-4000" />
@@ -186,16 +201,16 @@ const GalleryView = ({ onBack }) => {
          <h2 className="text-lg font-bold tracking-[0.2em] uppercase text-gray-900">
             Our Gallery
          </h2>
-         <div className="w-8" /> {/* Spacer */}
+         <div className="w-8" />
       </div>
 
-      {/* --- QUICK NAVIGATION (NEW) --- */}
+      {/* --- QUICK NAVIGATION --- */}
       <QuickNav activeSection={activeSection} onJump={jumpToSection} />
 
       {/* --- MAIN CONTENT --- */}
       <div className="relative z-10 pt-40 pb-20 px-4 md:px-8 max-w-7xl mx-auto space-y-24 md:space-y-32">
         
-        {/* 1. FAVORITE SECTION (NEW) */}
+        {/* 1. FAVORITE SECTION */}
         <section id="section-fav" className="scroll-mt-40">
             <div className="text-center mb-12">
                 <motion.div 
@@ -208,7 +223,6 @@ const GalleryView = ({ onBack }) => {
                 <p className="text-gray-500 font-serif italic">"Bagian Dari kamu yang aku suka."</p>
             </div>
             
-            {/* Masonry-style Grid for Favorites */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 {FAVORITES.map((src, i) => (
                     <motion.div 
@@ -224,7 +238,6 @@ const GalleryView = ({ onBack }) => {
         {/* 2. YEARLY SECTIONS */}
         {[2023, 2024, 2025].map((year) => (
             <section key={year} id={`section-${year}`} className="scroll-mt-40 relative">
-                {/* Year Header */}
                 <div className="flex items-center gap-6 mb-12">
                     <h3 className="text-6xl md:text-8xl font-black text-gray-200 select-none absolute -left-4 md:-left-10 -top-10 md:-top-16 -z-10 scale-150 opacity-50">
                         {year}
@@ -238,7 +251,6 @@ const GalleryView = ({ onBack }) => {
                     </p>
                 </div>
 
-                {/* Photo Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                     {GALLERY_DATA[year].map((src, i) => (
                         <PhotoCard key={i} src={src} index={i} />
@@ -246,6 +258,52 @@ const GalleryView = ({ onBack }) => {
                 </div>
             </section>
         ))}
+
+        {/* 3. FOOD SECTION (NEW) */}
+        <section id="section-food" className="scroll-mt-40">
+             <div className="text-center mb-12">
+                <motion.div 
+                    initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
+                    className="inline-flex items-center justify-center w-12 h-12 bg-orange-100 text-orange-500 rounded-full mb-4 shadow-sm"
+                >
+                    <Utensils size={24} />
+                </motion.div>
+                <h3 className="text-4xl md:text-5xl font-black text-gray-900 mb-2 tracking-tight">Our Culinary Journey</h3>
+                <p className="text-gray-500 font-serif italic">"Makan enak, perut kenyang, hati senang."</p>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {FOOD_DATA.map((src, i) => (
+                    <PhotoCard key={i} src={src} index={i} />
+                ))}
+            </div>
+        </section>
+
+        {/* 4. RANDOM SECTION (NEW) */}
+        <section id="section-random" className="scroll-mt-40">
+             <div className="text-center mb-12">
+                <motion.div 
+                    initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
+                    className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 text-purple-500 rounded-full mb-4 shadow-sm"
+                >
+                    <Sparkles size={24} />
+                </motion.div>
+                <h3 className="text-4xl md:text-5xl font-black text-gray-900 mb-2 tracking-tight">Random Dumps</h3>
+                <p className="text-gray-500 font-serif italic">"Hal-hal acak yang tak terlupakan."</p>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {RANDOM_DATA.map((src, i) => (
+                    // Random Grid Layout biar terlihat 'Random'
+                    <motion.div 
+                        key={i}
+                        className={`${i % 3 === 0 ? 'md:col-span-2' : ''}`}
+                    >
+                         <PhotoCard src={src} index={i} />
+                    </motion.div>
+                ))}
+            </div>
+        </section>
 
       </div>
 

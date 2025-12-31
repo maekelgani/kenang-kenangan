@@ -14,6 +14,7 @@ import StoryView from "./components/sections/StoryView";
 import MusicPlayer from "./components/ui/MusicPlayer"; 
 import TimeCapsule from "./components/ui/TimeCapsule";
 import InfiniteCards from "./components/ui/InfiniteCards";
+import LiveLyrics from "./components/ui/LiveLyrics";
 import { cardData } from "./data/cardData";
 
 // --- DATA CERITA (MINI STORY) ---
@@ -170,6 +171,7 @@ const StorySectionItem = ({ data, index }) => {
 
 function App() {
   const ref = useRef(null);
+  const [audioTime, setAudioTime] = useState(0);
   const [currentView, setCurrentView] = useState('home');
   const [isMobile, setIsMobile] = useState(false);
 
@@ -206,7 +208,7 @@ function App() {
   return (
     <>
       {/* 1. MUSIC PLAYER */}
-      <MusicPlayer />
+      <MusicPlayer onTimeUpdate={(time) => setAudioTime(time)}/>
 
       {/* 2. LOGIKA TAMPILAN */}
       
@@ -266,6 +268,10 @@ function App() {
                 </button>
             </motion.div>
             </section>
+
+            <div className="mt-8">
+                <LiveLyrics currentTime={audioTime} />
+            </div>
 
             {/* Text perjalanan waktu */}
             {/* --- UPGRADED: PERJALANAN WAKTU SECTION --- */}
