@@ -3,9 +3,35 @@
 /* Custom styles */
 body {
   overflow-x: hidden; /* Mencegah scroll horizontal akibat rotasi 3D */
+  selector-fn: none; /* Mencegah pemilihan teks yang tidak disengaja */
+  user-select: none;
 }
 
 /* Helper class untuk 3D wrapper */
 .perspective-1000 {
   perspective: 1000px;
+}
+
+@layer utilities {
+  .animate-scroll-left {
+    animation: scroll-left 40s linear infinite; /* Sesuaikan kecepatan (40s) */
+  }
+}
+
+@keyframes scroll-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%); /* Geser setengah dari total lebar (karena diduplikasi) */
+  }
+}
+
+/* Hide scrollbar for scroller ref */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }

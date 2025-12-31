@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 
 // Data Foto Dummy
 const polaroids = [
-  { id: 1, src: "/public/images/2023/2023-1.jpg", text: "First Date", rotate: -6, x: -100, y: -50 },
-  { id: 2, src: "/public/images/2023/2023-3.jpg", text: "Ice Cream", rotate: 12, x: 120, y: 40 },
-  { id: 3, src: "/public/images/2023/2023-12.jpg", text: "Pantaiii!", rotate: -15, x: -50, y: 100 },
-  { id: 4, src: "/public/images/2025/2025-1-Landscape.jpg", text: "Masak Masak", rotate: 8, x: 80, y: -80 },
-  { id: 5, src: "/public/images/2024/2024-2.jpg", text: "Random Snap", rotate: -3, x: 0, y: 0 },
+  { id: 1, src: "/images/2023/2023-1.jpg", text: "First Date", rotate: -6, x: -100, y: -50 },
+  { id: 2, src: "/images/2023/2023-3.jpg", text: "Ice Cream", rotate: 12, x: 120, y: 40 },
+  { id: 3, src: "/images/2023/2023-12.jpg", text: "Pantaiii!", rotate: -15, x: -50, y: 100 },
+  { id: 4, src: "/images/2025/2025-1-Landscape.jpg", text: "Masak Masak", rotate: 8, x: 80, y: -80 },
+  { id: 5, src: "/images/2024/2024-2.jpg", text: "Random Snap", rotate: -3, x: 0, y: 0 },
 ];
 
 const InteractiveDesk = () => {

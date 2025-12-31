@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Heart } from "lucide-react";
 
 // --- KOMPONEN: FLOATING HEARTS EFFECT ---
@@ -157,16 +157,21 @@ const ScribbleEnding = ({ onExploreClick }) => {
     offset: ["start center", "end end"] 
   });
 
-  const pathProgress = useTransform(scrollYProgress, [0, 0.9], [0, 1]);
+  // PERBAIKAN LOGIC SCROLL:
+  // 1. Path Progress selesai lebih cepat (0.85)
+  const pathProgress = useTransform(scrollYProgress, [0, 0.85], [0, 1]);
 
-  const cardOpacity = useTransform(scrollYProgress, [0.8, 0.95], [0, 1]);
-  const cardScale = useTransform(scrollYProgress, [0.8, 0.95], [0.8, 1]);
-  const cardY = useTransform(scrollYProgress, [0.8, 0.95], [100, 0]);
+  // 2. Card muncul LEBIH AWAL (mulai 0.75 selesai 0.9) agar pas berhenti langsung kelihatan
+  const cardOpacity = useTransform(scrollYProgress, [0.75, 0.9], [0, 1]);
+  const cardScale = useTransform(scrollYProgress, [0.75, 0.9], [0.9, 1]);
+  
+  // 3. Card bergerak dari bawah ke posisi normal dengan jarak tempuh lebih pendek agar cepat sampai
+  const cardY = useTransform(scrollYProgress, [0.75, 0.9], [50, 0]);
 
   return (
     <div 
         ref={containerRef} 
-        className="relative w-full min-h-[400vh] md:min-h-[300vh] flex flex-col items-center justify-start py-20 overflow-hidden"
+        className="relative w-full min-h-[350vh] md:min-h-[300vh] flex flex-col items-center justify-start py-20 overflow-hidden"
         style={{ backgroundColor: themeColor }}
     >
       
@@ -187,15 +192,16 @@ const ScribbleEnding = ({ onExploreClick }) => {
       <FloatingTriangle top="85%" right="2%" scrollYProgress={scrollYProgress} />
 
       {/* SVG Path */}
+      {/* PERBAIKAN: pathLength dipersingkat (L 50 1000) agar berhenti agak ke atas, tidak sampai bawah banget */}
       <div className="absolute top-0 w-full max-w-3xl h-full pointer-events-none z-10">
-        <svg viewBox="0 0 100 1200" fill="none" preserveAspectRatio="none" className="w-full h-[85%] overflow-visible">
+        <svg viewBox="0 0 100 1200" fill="none" preserveAspectRatio="none" className="w-full h-[90%] overflow-visible">
           <motion.path
-            d="M 50 0 C 50 150, 15 250, 15 350 C 15 450, 85 550, 85 650 C 85 750, 50 900, 50 1000 L 50 1200"
+            d="M 50 0 C 50 150, 15 250, 15 350 C 15 450, 85 550, 85 650 C 85 750, 50 850, 50 950 L 50 1000" // PERBAIKAN PATH (Berhenti lebih atas)
             stroke="url(#silverGlow)" strokeWidth="6" strokeLinecap="round" className="opacity-60 blur-md"
             style={{ pathLength: pathProgress }}
           />
           <motion.path
-            d="M 50 0 C 50 150, 15 250, 15 350 C 15 450, 85 550, 85 650 C 85 750, 50 900, 50 1000 L 50 1200"
+            d="M 50 0 C 50 150, 15 250, 15 350 C 15 450, 85 550, 85 650 C 85 750, 50 850, 50 950 L 50 1000" // SAMA
             stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeDasharray="10 20" 
             style={{ pathLength: pathProgress }}
           />
@@ -210,8 +216,8 @@ const ScribbleEnding = ({ onExploreClick }) => {
       </div>
 
       {/* Milestones */}
-      <Milestone year="2023" img="/public/images/2023/2023-12.jpg" align="left" top="15%" scrollYProgress={scrollYProgress} startRange={0.1} endRange={0.2} />
-      <Milestone year="2024" img="/public/images/2024/2024-6.jpg" align="right" top="40%" scrollYProgress={scrollYProgress} startRange={0.35} endRange={0.45} />
+      <Milestone year="2023" img="/images/2023/2023-12.jpg" align="left" top="15%" scrollYProgress={scrollYProgress} startRange={0.1} endRange={0.2} />
+      <Milestone year="2024" img="/images/2024/2024-6.jpg" align="right" top="40%" scrollYProgress={scrollYProgress} startRange={0.35} endRange={0.45} />
 
       {/* Message Card */}
       <div className="flex-grow"></div> 
@@ -230,7 +236,7 @@ const ScribbleEnding = ({ onExploreClick }) => {
           <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-8 bg-[#fef08a]/80 rotate-[-3deg] shadow-sm backdrop-blur-sm z-10 opacity-90" />
 
           <div className="w-full h-48 md:h-56 mb-8 overflow-hidden rounded-sm bg-gray-100">
-             <img src="/public/images/2025/2025-1-Landscape.jpg" alt="Us" className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000 grayscale hover:grayscale-0" />
+             <img src="/images/2025/2025-1-Landscape.jpg" alt="Us" className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000 grayscale hover:grayscale-0" />
           </div>
 
           {/* Padding bottom lebih besar di mobile agar text tidak ketutup tombol love */}
@@ -260,27 +266,6 @@ const ScribbleEnding = ({ onExploreClick }) => {
           <LoveButton />
         </div>
       </motion.div>
-
-      {/* --- BUTTON: LANJUT MENJELAJAH ---
-      <div className="absolute bottom-10 left-0 w-full flex justify-center z-50 pointer-events-auto">
-             <motion.button
-                onClick={onExploreClick}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="group flex flex-col items-center gap-2 text-gray-400 hover:text-gray-800 transition-colors"
-             >
-                <span className="text-xs uppercase tracking-[0.2em] font-medium">Lanjut Menjelajah</span>
-                <div className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center group-hover:bg-gray-800 group-hover:border-gray-800 group-hover:text-white transition-all">
-                    Icon Panah
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </div>
-             </motion.button>
-        </div> */}
 
     </div>
   );

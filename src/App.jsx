@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { ArrowRight, Heart, Star, Sparkles, Quote } from "lucide-react";
+import { ArrowRight, Hourglass, Heart, Star, Sparkles, Quote, X } from "lucide-react";
 
 // Components
 import DustParticles from "./components/ui/DustParticles";
@@ -13,6 +13,8 @@ import InteractiveDesk from "./components/sections/InteractiveDesk";
 import StoryView from "./components/sections/StoryView"; 
 import MusicPlayer from "./components/ui/MusicPlayer"; 
 import TimeCapsule from "./components/ui/TimeCapsule";
+import InfiniteCards from "./components/ui/InfiniteCards";
+import { cardData } from "./data/cardData";
 
 // --- DATA CERITA (MINI STORY) ---
 const miniStories = [
@@ -22,7 +24,7 @@ const miniStories = [
     subtitle: "Permulaan",
     text1: "Tahun ini adalah awal dari semua cerita kita. Pertemuan yang terjadi secara tidak sengaja, memberikan jalan buat kita membangun hubungan yang gemas ini.",
     text2: "Bahagia, Marah, Cemburu.. itu sering sangat terjadi di tahun ini, yahh namanya juga tahun pertama kali hehe. Meski begitu, ini adalah tahun yang manis karena aku menemukan kamu.",
-    images: ["/public/images/2023/2023-1.jpg", "/public/images/2023/2023-12.jpg"],
+    images: ["/images/2023/2023-1.jpg", "/images/2023/2023-12.jpg"],
     color: "bg-pink-50"
   },
   {
@@ -31,7 +33,7 @@ const miniStories = [
     subtitle: "Belajar memahami",
     text1: "Tahun ini, banyak banget hal yang kita dapatkan. Kita belajar bagaimana hubungan itu hanya bisa dibangun bersama dua orang dan bukan sendiri. Adu argumen kecil, diam yang panjang, tapi selalu ada jalan untuk kita berbaikan.",
     text2: "kita saling belajar memahami satu sama lain, balajar buat mengerti dan berkembang. Meski begitu, aku bersyukur kita tetap bertahan hingga akhir tahun 2024 dan cinta kamu tidak pernah berkurang love you.",
-    images: ["/public/images/2024/2024-1.jpg", "/public/images/2024/2024-7.jpg"],
+    images: ["/images/2024/2024-1.jpg", "/images/2024/2024-7.jpg"],
     color: "bg-blue-50"
   },
   {
@@ -40,7 +42,7 @@ const miniStories = [
     subtitle: "Menatap masa depan",
     text1: "Tahun ini apaa yaa... Tahun ini aku ngerasa hubungan kita makin kuat. Meski kita masih saling adu paham, berantem, dan semacamnya.. tapi aku, kamu, kita masih saling memaafkan, memperbaiki. Entah sudah berapa kali maaf, tapi kita masih menerima.",
     text2: "Tahun ini juga banyak perjuangan kita ntah untuk diri sendiri atau untuk hubungan kita. Terimaaci untuk kamu yang sudah bertahan sejauh ini. Aku harap kita bisa terus bersama melewati tahun-tahun berikutnya. Aamiin.",
-    images: ["/public/images/2025/2025-12-Landscape.jpg", "/public/images/2025/2025-9.jpeg"],
+    images: ["/images/2025/2025-12-Landscape.jpg", "/images/2025/2025-9.jpeg"],
     color: "bg-purple-50"
   }
 ];
@@ -263,12 +265,71 @@ function App() {
                     </span>
                 </button>
             </motion.div>
-            <motion.div style={{ opacity: opacityText, y: yText }} className="max-w-xs md:max-w-3xl mx-auto text-center space-y-4 md:space-y-8 pb-10">
-              <h2 className="text-2xl md:text-5xl font-bold text-gray-800">Perjalanan Waktu</h2>
-              <p className="text-sm md:text-lg text-gray-600 leading-relaxed md:leading-loose">Setiap detik yang berlalu adalah jejak yang tak mungkin terhapus. Di antara tawa tahun 2023, air mata bahagia di 2024, dan harapan baru di 2025.</p>
-            </motion.div>
-          </section>
+            </section>
 
+            {/* Text perjalanan waktu */}
+            {/* --- UPGRADED: PERJALANAN WAKTU SECTION --- */}
+            <motion.div 
+                style={{ opacity: opacityText, y: yText }} 
+                className="relative z-30 max-w-xs md:max-w-4xl mx-auto text-center py-20 md:py-32" // Padding diperbesar
+            >
+                {/* Background Radial Glow agar teks tidak "tenggelam" */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-white/80 blur-3xl -z-10 rounded-full pointer-events-none"></div>
+
+                {/* 1. ICON HEADER (Jam Pasir & Sparkles) */}
+                <div className="flex justify-center mb-8 relative">
+                    <motion.div 
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 12, ease: "linear" }} // Putaran lebih pelan & elegan
+                        className="relative z-10 p-5 bg-white/90 backdrop-blur-sm rounded-full shadow-2xl border border-gray-100 ring-4 ring-gray-50/50"
+                    >
+                        <Hourglass size={40} className="text-gray-800" strokeWidth={1.2} />
+                    </motion.div>
+                    
+                    {/* Dekorasi Sparkles Melayang */}
+                    <motion.div 
+                        animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6], rotate: [0, 15, -15, 0] }}
+                        transition={{ repeat: Infinity, duration: 3 }}
+                        className="absolute -top-4 right-[42%] text-yellow-400 drop-shadow-md"
+                    >
+                        <Sparkles size={28} />
+                    </motion.div>
+                </div>
+
+                {/* 2. JUDUL (Typography Upgrade - Lebih Besar) */}
+                <h2 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter mb-6 drop-shadow-sm">
+                    Perjalanan <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 to-gray-900 italic font-serif">Waktu</span>
+                </h2>
+
+                {/* 3. DECORATIVE DIVIDER (Garis Pemisah) */}
+                <div className="flex items-center justify-center gap-6 mb-8 opacity-50">
+                    <div className="h-[1px] w-16 md:w-32 bg-gradient-to-r from-transparent via-gray-400 to-transparent"></div>
+                    <div className="flex gap-2 text-gray-400">
+                        <Star size={12} fill="currentColor" className="animate-pulse" />
+                        <Star size={16} fill="currentColor" />
+                        <Star size={12} fill="currentColor" className="animate-pulse" />
+                    </div>
+                    <div className="h-[1px] w-16 md:w-32 bg-gradient-to-r from-transparent via-gray-400 to-transparent"></div>
+                </div>
+
+                {/* 4. PARAGRAF (Lebih Puitis & Jelas) */}
+                <div className="relative px-4">
+                    {/* Tanda Kutip Besar Samar */}
+                    <Quote size={80} className="absolute -top-10 -left-4 md:left-10 text-gray-100 rotate-180 -z-10" />
+                    
+                    <p className="text-base md:text-2xl text-gray-600 font-serif leading-relaxed md:leading-loose max-w-3xl mx-auto">
+                        "Setiap detik yang berlalu adalah jejak yang tak mungkin terhapus. <br className="hidden md:block"/>
+                        Di antara <span className="font-bold text-gray-900 bg-yellow-100/80 px-2 py-0.5 rounded-md mx-1 shadow-sm">tawa 2023</span>, 
+                        air mata bahagia di <span className="font-bold text-gray-900 bg-pink-100/80 px-2 py-0.5 rounded-md mx-1 shadow-sm">2024</span>, 
+                        dan seribu harapan baru di <span className="font-bold text-gray-900 bg-blue-100/80 px-2 py-0.5 rounded-md mx-1 shadow-sm">2025</span>."
+                    </p>
+
+                    <Quote size={80} className="absolute -bottom-10 -right-4 md:right-10 text-gray-100 -z-10" />
+                </div>
+
+            </motion.div>
+
+          
           {/* SECTION 3: PARALLAX */}
           <ParallaxSection />
           
@@ -278,8 +339,16 @@ function App() {
           {/* SECTION 5: INTERACTIVE DESK */}
           <InteractiveDesk />
 
+          <section className="relative z-20 bg-white border-b border-gray-100">
+              <div className="text-center pt-20 pb-10">
+                  <h3 className="text-2xl font-bold text-gray-800 uppercase tracking-widest">Momen Spesial Lainnya</h3>
+                  <p className="text-gray-500 mt-2">Klik kartu untuk melihat detail</p>
+              </div>
+              <InfiniteCards items={cardData} />
+          </section>
+
           {/* --- SECTION BARU: MINI STORY TIMELINE (ENHANCED) --- */}
-          <section className="relative z-20 py-20 bg-white overflow-hidden">
+          <section className="relative z-0 py-20 bg-white overflow-hidden">
             <div className="text-center mb-32 px-6 relative z-10">
                 <motion.h2 
                     initial={{ opacity: 0, y: 20 }}

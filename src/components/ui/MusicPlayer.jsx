@@ -5,8 +5,8 @@ import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 const MusicPlayer = () => {
   // --- KONFIGURASI LAGU ---
   const SONG_META = {
-    title: "Sempurna",               
-    artist: "Andra & The Backbone",  
+    title: "Bergema Sampai Selamana",               
+    artist: "Nadhif Basalamah",  
     coverUrl: "https://i.scdn.co/image/ab67616d0000b273b55d26c578e30129b0a7e86e", 
     audioUrl: "/music/music-1.mp3"   
   };

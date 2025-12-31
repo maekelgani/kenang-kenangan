@@ -1,115 +1,94 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+// Ganti path ini sesuai gambar asli Anda di folder public
 const images = [
-  "/public/images/2023/2023-11.png", 
-  "/public/images/2023/2023-2.jpg",
-  "/public/images/2024/2024-1.jpg",
-  "/public/images/2024/2024-6.jpg",
-  "/public/images/2025/2025-11.jpg",
+  "/images/2023/2023-11.png", 
+  "/images/2023/2023-2.jpg",
+  "/images/2024/2024-1.jpg",
+  "/images/2024/2024-6.jpg",
+  "/images/2025/2025-11.jpg",
 ];
 
 const Coverflow = () => {
-  // Kita menggunakan "Page" index yang bisa minus atau plus tak terbatas
-  // Ini kunci agar animasi tidak patah saat looping dari akhir ke awal
   const [page, setPage] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Logic mengambil gambar berdasarkan page index (Modulus Math)
+  // Logic mengambil gambar (Looping infinite)
   const getImageIndex = (currentPage) => {
     const length = images.length;
-    // Trik matematika untuk menangani angka negatif (agar looping mundur tetap jalan)
     return ((currentPage % length) + length) % length;
   };
 
-  // Navigasi
   const paginate = useCallback((newDirection) => {
     setPage((prev) => prev + newDirection);
   }, []);
 
-  // Auto-Play (Pause saat di-drag atau hover)
+  // Auto-Play
   useEffect(() => {
     if (isDragging) return;
-    
     const interval = setInterval(() => {
       paginate(1);
-    }, 3500);
+    }, 4000); // Sedikit diperlambat agar lebih tenang
     return () => clearInterval(interval);
   }, [isDragging, paginate]);
 
   // Logic Swipe / Drag
   const onDragEnd = (event, info) => {
     setIsDragging(false);
-    const swipeThreshold = 50; // Jarak minimal geser untuk ganti gambar
+    const swipeThreshold = 50;
     const { offset, velocity } = info;
 
-    // Deteksi arah swipe
     if (offset.x > swipeThreshold || velocity.x > 500) {
-      paginate(-1); // Swipe Kanan -> Mundur
+      paginate(-1); 
     } else if (offset.x < -swipeThreshold || velocity.x < -500) {
-      paginate(1);  // Swipe Kiri -> Maju
+      paginate(1); 
     }
   };
 
   const renderImages = () => {
-    // Kita merender 5 slot posisi relatif terhadap "page" saat ini
-    // [-2, -1, 0, 1, 2]
     const range = [-2, -1, 0, 1, 2];
 
     return range.map((offset) => {
-      // Index virtual sebenarnya (misal: page 10, offset -1 = 9)
       const actualIndex = page + offset; 
-      // Ambil gambar yang sesuai dari array
       const imageSrc = images[getImageIndex(actualIndex)]; 
-      
       const isCenter = offset === 0;
 
       // Responsive spacing
-      const spacing = window.innerWidth < 768 ? 130 : 250; 
+      const spacing = window.innerWidth < 768 ? 140 : 280; 
       const xPos = offset * spacing;
 
       return (
         <motion.div
-          key={actualIndex} // GUNAKAN ACTUAL INDEX SEBAGAI KEY (PENTING AGAR TIDAK GLITCH)
-          className={`absolute rounded-xl overflow-hidden border border-white/10 bg-gray-900 select-none
+          key={actualIndex}
+          className={`absolute rounded-2xl overflow-hidden bg-white select-none shadow-xl
             ${isCenter 
-                ? "z-30 w-[260px] h-[380px] md:w-[450px] md:h-[600px] shadow-2xl shadow-black/50" 
-                : "z-10 w-[220px] h-[300px] md:w-[350px] md:h-[480px] brightness-[0.4] grayscale-[60%]"
+                ? "z-30 w-[260px] h-[380px] md:w-[450px] md:h-[600px] border-4 border-white shadow-2xl ring-1 ring-gray-200" 
+                : "z-10 w-[220px] h-[300px] md:w-[350px] md:h-[480px] brightness-100" // Hapus brightness/grayscale bawaan
             }`}
           
-          // Initial state untuk animasi entry yang halus
-          initial={{ 
-            x: xPos,
-            scale: 0.8,
-            opacity: 0 
-          }}
-          
-          // Animasi perubahan posisi
+          initial={{ x: xPos, scale: 0.8, opacity: 0 }}
           animate={{
             x: xPos,
-            scale: isCenter ? 1 : Math.abs(offset) === 2 ? 0.7 : 0.85,
-            rotateY: offset * -15, // Rotasi 3D
+            scale: isCenter ? 1 : 0.85,
+            rotateY: offset * -25, // Rotasi lebih tajam
             zIndex: 30 - Math.abs(offset),
-            opacity: Math.abs(offset) > 2 ? 0 : 1, // Sembunyikan jika keluar dari range
+            opacity: Math.abs(offset) > 2 ? 0 : 1,
+            filter: isCenter ? "blur(0px)" : "blur(4px)", // EFEK BLUR UNTUK YANG TIDAK AKTIF
           }}
-          
           transition={{
             type: "spring",
-            stiffness: 150, // Lebih responsif
-            damping: 25,
-            mass: 0.8
+            stiffness: 120,
+            damping: 20,
+            mass: 1
           }}
-          
           style={{ 
-            perspective: '1000px',
+            perspective: '1200px',
             transformStyle: 'preserve-3d',
-            cursor: isDragging ? 'grabbing' : 'grab', // Cursor berubah saat drag
-            // Penting: touch-action none agar browser tidak scroll halaman saat swipe carousel
+            cursor: isDragging ? 'grabbing' : 'grab',
             touchAction: 'pan-y' 
           }}
-          
-          // Event Listener untuk Click (Pindah ke gambar yang diklik)
           onClick={() => {
             if (!isDragging && offset !== 0) paginate(offset);
           }}
@@ -117,43 +96,39 @@ const Coverflow = () => {
           <img 
             src={imageSrc} 
             alt="Memory" 
-            className="w-full h-full object-cover pointer-events-none"
-            draggable="false" // Matikan drag native browser pada gambar
+            className="w-full h-full object-cover pointer-events-none bg-gray-100"
+            draggable="false"
           />
           
-          {/* Overlay Gelap */}
-          <div className={`absolute inset-0 bg-black transition-opacity duration-500 ${isCenter ? 'opacity-0' : 'opacity-40'}`} />
+          {/* Overlay Putih Transparan (Bukan Hitam) untuk efek 'Dreamy' */}
+          <div className={`absolute inset-0 bg-white/40 transition-opacity duration-500 ${isCenter ? 'opacity-0' : 'opacity-100'}`} />
         </motion.div>
       );
     });
   };
 
   return (
-    <div className="relative w-full h-[450px] md:h-[700px] flex flex-col items-center justify-center py-10">
+    <div className="relative w-full h-[500px] md:h-[750px] flex flex-col items-center justify-center py-10 overflow-hidden">
       
       {/* Area Swipe / Drag Wrapper */}
-      {/* Kita pasang drag listener di container pembungkus agar area swipe luas */}
       <motion.div 
         className="relative w-full h-full flex items-center justify-center perspective-1000 cursor-grab active:cursor-grabbing"
-        onMouseEnter={() => setIsDragging(true)} // Pause auto-play saat hover
+        onMouseEnter={() => setIsDragging(true)}
         onMouseLeave={() => setIsDragging(false)}
-        
-        // --- AKTIVASI FITUR TOUCH/DRAG ---
-        drag="x" // Hanya geser horizontal
-        dragConstraints={{ left: 0, right: 0 }} // Snap back ke tengah
-        dragElastic={0.05} // Efek karet saat ditarik
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.05}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={onDragEnd}
-        // ---------------------------------
       >
         {renderImages()}
       </motion.div>
 
-      {/* Navigasi Tombol (Tetap ada untuk Desktop user) */}
-      <div className="flex items-center gap-6 mt-6 md:mt-2 z-40 pointer-events-auto">
+      {/* Navigasi Tombol (Tema Terang) */}
+      <div className="flex items-center gap-8 mt-4 md:mt-8 z-40 pointer-events-auto">
         <button 
           onClick={() => paginate(-1)}
-          className="p-3 rounded-full bg-white/5 hover:bg-white/20 backdrop-blur-sm border border-white/10 transition-all text-gray-400 hover:text-white active:scale-95"
+          className="p-3 rounded-full bg-white/80 hover:bg-white shadow-lg border border-gray-100 transition-all text-gray-400 hover:text-gray-900 active:scale-95"
         >
           <ChevronLeft size={24} />
         </button>
@@ -163,20 +138,20 @@ const Coverflow = () => {
             {images.map((_, idx) => (
                 <div 
                     key={idx}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${idx === getImageIndex(page) ? 'w-8 bg-white' : 'w-1.5 bg-gray-600'}`}
+                    className={`h-1.5 rounded-full transition-all duration-500 ${idx === getImageIndex(page) ? 'w-8 bg-gray-800' : 'w-1.5 bg-gray-300'}`}
                 />
             ))}
         </div>
 
         <button 
           onClick={() => paginate(1)}
-          className="p-3 rounded-full bg-white/5 hover:bg-white/20 backdrop-blur-sm border border-white/10 transition-all text-gray-400 hover:text-white active:scale-95"
+          className="p-3 rounded-full bg-white/80 hover:bg-white shadow-lg border border-gray-100 transition-all text-gray-400 hover:text-gray-900 active:scale-95"
         >
           <ChevronRight size={24} />
         </button>
       </div>
       
-      <p className="mt-4 text-[10px] md:text-xs text-gray-500 tracking-widest uppercase opacity-60">
+      <p className="mt-6 text-[10px] md:text-xs text-gray-400 tracking-[0.2em] uppercase font-medium">
         Swipe or Drag to Explore
       </p>
     </div>

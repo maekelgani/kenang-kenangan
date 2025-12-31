@@ -30,21 +30,21 @@ const ParallaxSection = () => {
   const y3 = useTransform(scrollYProgress, [0, 1], [0, -100]); // Naik lambat
 
   const images1 = [
-     "/public/images/2023/2023-1.jpg", 
-     "/public/images/2024/2024-2.jpg", 
-     "/public/images/2025/2025-1-Landscape.jpg",
-     "/public/images/2025/2025-3-Landscape.jpg"
+     "/images/2023/2023-1.jpg", 
+     "/images/2024/2024-2.jpg", 
+     "/images/2025/2025-1-Landscape.jpg",
+     "/images/2025/2025-3-Landscape.jpg"
   ];
   const images2 = [
-     "/public/images/2023/2023-9-Landscape.jpg", 
-     "/public/images/2024/2024-6.jpg", 
-     "/public/images/2025/2025-11.jpg"
+     "/images/2023/2023-9-Landscape.jpg", 
+     "/images/2024/2024-6.jpg", 
+     "/images/2025/2025-11.jpg"
   ];
   const images3 = [
-     "/public/images/2023/2023-4.jpg", 
-     "/public/images/2024/2024-1.jpg", 
-     "/public/images/2025/2025-5-Landscape.jpg",
-     "/public/images/2024/2024-7.jpg"
+     "/images/2023/2023-4.jpg", 
+     "/images/2024/2024-1.jpg", 
+     "/images/2025/2025-5-Landscape.jpg",
+     "/images/2024/2024-7.jpg"
   ];
 
   return (

@@ -6,13 +6,13 @@ import DustParticles from "./DustParticles"; // Import DustParticles yang sudah 
 // --- DATA GAMBAR BACKGROUND (SCATTERED MEMORIES) ---
 // Gunakan foto-foto kecil/random kalian di sini
 const SCATTERED_IMAGES = [
-    "/public/images/2023/2023-3.jpg",
-    "/public/images/2024/2024-1.jpg",
-    "/public/images/2024/2024-6.jpg",
-    "/public/images/2025/2025-9.jpg",
-    "/public/images/2023/2023-6.jpg",
-    "/public/images/2025/2025-14.jpg",
-    "/public/images/2023/2023-1.jpg",
+    "/images/2023/2023-3.jpg",
+    "/images/2024/2024-1.jpg",
+    "/images/2024/2024-6.jpg",
+    "/images/2025/2025-9.jpg",
+    "/images/2023/2023-6.jpg",
+    "/images/2025/2025-14.jpg",
+    "/images/2023/2023-1.jpg",
 ];
 const imagePositions = [
     { top: "5%", left: "5%", rotate: -10 },
